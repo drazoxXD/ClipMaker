@@ -83,11 +83,3 @@ npm run tauri build    # the installer, in src-tauri/target/release/bundle/nsis
 `scripts/release-install.ps1` builds the installer, closes the running app, installs the new version silently and starts it.
 
 Releases are built by the [Build workflow](.github/workflows/build.yml) on every code change, or by hand. Each release lists the commits since the previous one and how long the build took.
-
----
-
-<div align="center">
-
-ClipMaker is not affiliated with or endorsed by Medal, AMD, NVIDIA or Microsoft. It bundles FFmpeg (GPL build by BtbN) and uses RNNoise through nnnoiseless.
-
-</div>
