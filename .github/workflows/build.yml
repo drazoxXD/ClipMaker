@@ -1,0 +1,136 @@
+# Builds the Windows installer (Tauri + NSIS, with the FFmpeg DLLs bundled) and publishes a release.
+# Runs when code changes (not for README, docs, images or icons), or by hand from the Actions tab.
+# The release is a normal "latest" release; its notes list every commit since the previous release,
+# and a build log with the time each part took.
+name: Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "src-tauri/**"
+      - "index.html"
+      - "overlay.html"
+      - "package.json"
+      - "vite.config.ts"
+      - "tsconfig*.json"
+      - "scripts/fetch-ffmpeg.ps1"
+      - ".github/workflows/build.yml"
+      - "!**/*.md"
+      - "!**/*.png"
+      - "!**/*.ico"
+      - "!**/*.svg"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rust
+        run: rustup toolchain install stable --profile minimal
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # The FFmpeg headers, import libs and DLLs (not in git). LLVM, which the FFmpeg bindings need,
+      # is preinstalled on the Windows runner at the path src-tauri/.cargo/config.toml points to.
+      - uses: actions/cache@v4
+        with:
+          path: src-tauri/ffmpeg
+          key: ffmpeg-n9.0-${{ hashFiles('scripts/fetch-ffmpeg.ps1') }}
+
+      - name: Fetch FFmpeg
+        shell: pwsh
+        run: ./scripts/fetch-ffmpeg.ps1
+
+      - name: Build
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force log | Out-Null
+          function Fmt([double]$s) {
+            if ($s -ge 60) { return "{0}min {1}sec" -f [int][math]::Floor($s / 60), [int]($s % 60) }
+            return "{0}sec" -f [int]$s
+          }
+          $sw = [System.Diagnostics.Stopwatch]::StartNew()
+          npm install --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
+          Add-Content log/build.txt "Dependencies: installed in $(Fmt $sw.Elapsed.TotalSeconds)"
+          $sw.Restart()
+          npm run tauri build
+          if ($LASTEXITCODE -ne 0) { throw "tauri build failed" }
+          Add-Content log/build.txt "Installer(win64): built in $(Fmt $sw.Elapsed.TotalSeconds)"
+
+      # A stable file name, so the README's download link never changes.
+      - name: Collect
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          $setup = Get-ChildItem src-tauri/target/release/bundle/nsis -Filter '*-setup.exe' | Select-Object -First 1
+          if (-not $setup) { throw "installer not found" }
+          Copy-Item $setup.FullName dist/ClipMaker_Setup.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: win
+          path: |
+            dist/ClipMaker_Setup.exe
+            log/build.txt
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          tag="build-${{ github.run_number }}"
+          sha="${{ github.sha }}"
+          prev=$(gh release list --repo "$REPO" --limit 1 --json tagName --jq '.[0].tagName')
+
+          {
+            echo "## Changes"
+            echo
+            if [ -n "$prev" ] && git rev-parse -q --verify "refs/tags/$prev" >/dev/null; then
+              range="$prev..$sha"
+            else
+              range="$sha"
+            fi
+            git log --no-merges --format="%s|%H" "$range" | while IFS='|' read -r subject hash; do
+              echo "$subject [commit](https://github.com/$REPO/commit/$hash)"
+              echo
+            done
+            echo
+            echo "Build log:"
+            echo '```'
+            cat out/log/build.txt
+            echo '```'
+          } > notes.md
+
+          gh release create "$tag" out/dist/ClipMaker_Setup.exe \
+            --repo "$REPO" \
+            --target "$sha" \
+            --title "Build ${{ github.run_number }} (${sha:0:7})" \
+            --notes-file notes.md \
+            --latest

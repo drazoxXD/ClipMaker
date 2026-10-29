@@ -1,0 +1,4 @@
+[env]
+# ffmpeg-sys-next links against the bundled FFmpeg shared build (include/ + lib/ + bin/*.dll).
+FFMPEG_DIR = { value = "ffmpeg", relative = true }
+LIBCLANG_PATH = "C:\\Program Files\\LLVM\\bin"

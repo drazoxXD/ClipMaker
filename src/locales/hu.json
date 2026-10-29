@@ -1,0 +1,279 @@
+{
+  "nav": {
+    "overview": "Áttekintés",
+    "clips": "Klipek",
+    "video": "Videó",
+    "audio": "Hang",
+    "replay": "Visszajátszás és tárolás",
+    "hotkeys": "Gyorsbillentyűk",
+    "general": "Általános",
+    "groupRecording": "Felvétel",
+    "groupApp": "Alkalmazás"
+  },
+  "action": {
+    "saveClip": "Klip mentése",
+    "minimize": "Kis méret",
+    "close": "Bezárás a tálcára",
+    "startBuffer": "Visszajátszás indítása",
+    "stopBuffer": "Visszajátszás leállítása",
+    "showInFolder": "Megnyitás a mappában",
+    "delete": "Törlés",
+    "browse": "Tallózás",
+    "openFolder": "Mappa megnyitása",
+    "refresh": "Frissítés",
+    "clear": "Törlés",
+    "test": "Próba"
+  },
+  "state": {
+    "idle": "Áll",
+    "starting": "Indul",
+    "buffering": "Felvétel",
+    "saving": "Mentés",
+    "error": "Hiba"
+  },
+  "overview": {
+    "liveTitle": "A visszajátszás fut",
+    "idleTitle": "A visszajátszás ki van kapcsolva",
+    "liveHint": "Nyomd meg: {key}, és mentődik az utolsó {len}.",
+    "idleHint": "Indítsd el a visszajátszást, hogy az utolsó pillanatok mindig menthetők legyenek.",
+    "output": "Kimenet",
+    "encoder": "Kódoló",
+    "bufferSize": "Puffer",
+    "estimate": "Teljes klip ≈ {mb}",
+    "performance": "Rögzítés",
+    "dropped": "{n} eldobott képkocka",
+    "tracks": "Hangsávok",
+    "noTracks": "Még nincs hangsáv.",
+    "audioSettings": "Hangbeállítások",
+    "lastClip": "Utolsó klip",
+    "noClip": "Ebben a munkamenetben még nem mentettél klipet."
+  },
+  "video": {
+    "capture": {
+      "title": "Rögzítés",
+      "hint": "Sima képernyőfelvétel, semmi nem épül be a játékokba.",
+      "monitor": "Monitor",
+      "api": "Rögzítési mód",
+      "apiHint": "A Játékablak az előtérben lévő teljes képernyős játékot rögzíti, mint a Game DVR: akkor is folyamatos, ha a játék megkerüli az asztalt. Egyébként a teljes monitor kerül rögzítésre.",
+      "cursor": "Egérmutató rögzítése",
+      "priority": "Prioritás",
+      "priorityRecording": "Felvétel előnyben",
+      "priorityGame": "Játék előnyben",
+      "priorityHint": {
+        "game": "A játék megtartja a teljes GPU-prioritást. Legjobb játékbeli FPS; nagy terhelésnél a klipben néhány képkocka ismétlődhet.",
+        "recording": "A felvevő magasabb GPU- és CPU-prioritást kap. A legsimább klipek, némi játékbeli FPS árán."
+      },
+      "apiMonitor": "Monitor",
+      "apiAuto": "Játékablak (auto)"
+    },
+    "output": {
+      "title": "Kimenet",
+      "hint": "A klipek mérete {w}×{h} ({aspect}). A szélesség a monitorodhoz igazodik, így az ultrawide ultrawide marad: nincsenek fekete sávok.",
+      "resolution": "Felbontás",
+      "native": "Natív",
+      "custom": "Egyéni",
+      "customSize": "Egyéni méret",
+      "keepAspect": "Arány tartása",
+      "fps": "Képkockasebesség"
+    },
+    "encoder": {
+      "title": "Kódoló",
+      "hint": "Csak az ezen a gépen működő kódolók jelennek meg.",
+      "noneFound": "Nem található működő kódoló. Ellenőrizd, hogy az FFmpeg DLL-ek az alkalmazás mellett vannak-e.",
+      "device": "Kódolás ezen",
+      "deviceHint": "A GPU alig terheli a játékot; a CPU adja a legtöbb beállítási lehetőséget.",
+      "codec": "Kodek",
+      "encoder": "Kódoló"
+    },
+    "rate": {
+      "title": "Bitráta-szabályozás",
+      "hint": "Hogyan osztja be a kódoló a biteket.",
+      "mode": "Mód",
+      "modeHint": {
+        "cbr": "Állandó bitráta: kiszámítható méret.",
+        "vbr": "Változó bitráta: átlagos cél, felső korláttal.",
+        "cqp": "Állandó QP: fix minőség, a méret változik.",
+        "crf": "Állandó minőségi tényező: egyenletes látványminőség, a méret változik."
+      },
+      "bitrate": "Bitráta",
+      "bitrateHint": "1440p60 játékhoz 20–50 Mbps ajánlott.",
+      "maxBitrate": "Maximális bitráta",
+      "quality": "Minőség",
+      "qualityHint": "Kisebb szám = jobb minőség, nagyobb fájl."
+    },
+    "advanced": {
+      "title": "Haladó",
+      "hint": "A kódoló finomhangolása. Az alapértékek a legtöbbeknek megfelelnek.",
+      "preset": "Preset",
+      "presetHint": "A gyorsabb kevesebbet terhel, a lassabb jobban tömörít.",
+      "profile": "Profil",
+      "tune": "Hangolás",
+      "keyframe": "Kulcskocka-távolság",
+      "keyframeHint": "A klip kulcskockán kezdődik, így a rövidebb pontosabb kezdést ad.",
+      "bframes": "B-kockák",
+      "bframesHint": "A 0 minden lejátszóval és vágóprogrammal működik.",
+      "threads": "Kódolószálak",
+      "threadsHint": "0 = automatikus.",
+      "colorRange": "Színtartomány",
+      "limited": "Korlátozott (TV)",
+      "full": "Teljes (PC)"
+    }
+  },
+  "audio": {
+    "tracks": {
+      "title": "Sávok",
+      "hint": "Minden sáv külön kerül a klipbe, készen a vágóprogramhoz.",
+      "system": "Rendszer-mix",
+      "systemHint": "Minden, amit hallasz, kivéve az alkalmazás saját hangjait.",
+      "separate": "Alkalmazások külön sávon",
+      "separateHint": "Minden hangot adó alkalmazás saját sávot kap.",
+      "defaultRule": "Új alkalmazások",
+      "defaultRuleHint": "Mi történjen egy alkalmazással, amikor először ad hangot.",
+      "mixMode": "Mix sáv",
+      "mixModeHint": {
+        "apps": "Minden alkalmazás saját csatornát és saját hangerőt kap; ezekből és a mikrofonból készül egy sztereó sáv.",
+        "loopback": "Egyetlen felvétel mindenről, amit hallasz. Az alkalmazásonkénti hangerő ekkor csak a saját sávos alkalmazásokra hat."
+      },
+      "mixApps": "Alkalmazásonkénti mix",
+      "mixLoopback": "Minden"
+    },
+    "rule": {
+      "separate": "Saját sáv",
+      "mix": "Csak mix"
+    },
+    "apps": {
+      "title": "Hangot adó alkalmazások",
+      "hint": "Alkalmazásonként egy sor (exe név alapján). A módosított beállítások az exe-hez mentődnek, és legközelebb is megmaradnak.",
+      "disabled": "A külön sávok ki vannak kapcsolva, így minden csak a rendszer-mixbe kerül.",
+      "empty": "Semmi nem szól",
+      "emptyHint": "Az alkalmazások itt jelennek meg, amint hangot adnak.",
+      "recording": "saját sávon",
+      "remembered": "Megjegyzett alkalmazások",
+      "quiet": "csendes",
+      "mute": "Némítás",
+      "loopbackVolume": "„Minden” mix: ezek a hangerők csak a saját sávos alkalmazásokat módosítják.",
+      "saved": "Mentve"
+    },
+    "mic": {
+      "title": "Mikrofon",
+      "hint": "A hangod felvétele a játékkal együtt.",
+      "device": "Eszköz",
+      "default": "Alapértelmezett mikrofon",
+      "ownTrack": "Saját sáv",
+      "ownTrackHint": "Kikapcsolva a mikrofon a rendszer-mixbe kerül.",
+      "volume": "Hangerő",
+      "gate": "Zajkapu",
+      "gateHint": "E szint alatt elnémítja a mikrofont.",
+      "gateOff": "Ki",
+      "meterOpen": "Hallanak téged",
+      "gateAt": "Kapu: {db} dB",
+      "meterClosed": "A zajkapu elnémít",
+      "meterHint": "Maradj csendben egy pillanatig, figyeld a szürke oszlopokat, majd húzd a sárga vonalat épp föléjük. Beszéd közben az oszlopoknak zöldre kell váltaniuk.",
+      "meterNoMic": "Kapcsold be a mikrofont a szint megjelenítéséhez",
+      "meterNoGate": "Zajkapu kikapcsolva: mindig hallanak",
+      "strength": "Zajszűrés erőssége",
+      "suppressionHint": "Kiszűri a billentyűzet-, ventilátor- és háttérzajt a zajkapu előtt. Az RNNoise egy AI-alapú zajszűrő.",
+      "strengthHint": "100% szűri a legtöbb zajt; kisebb érték többet hagy meg a természetes hangodból.",
+      "suppression": "Zajszűrés",
+      "suppressionOff": "Ki",
+      "listen": "Visszahallgatás",
+      "meterInput": "Bemenet",
+      "meterAfter": "Zajszűrés után",
+      "meterVoice": "Beszéd észlelve",
+      "meterRemoved": "Most {db} dB zaj van kiszűrve. A lenti grafikon halvány oszlopai a nyers bemenetet mutatják."
+    },
+    "encoding": {
+      "title": "Hangkódolás",
+      "codec": "Kodek",
+      "bitrate": "Bitráta sávonként",
+      "bitrateHint": "Játékhanghoz bőven elég a 160 kbps.",
+      "sampleRate": "Mintavételezés"
+    }
+  },
+  "replay": {
+    "length": {
+      "title": "Visszajátszás hossza",
+      "hint": "Milyen messzire nyúlik vissza a mentett klip."
+    },
+    "estimate": {
+      "total": "Klip mérete",
+      "video": "Videó",
+      "audio": "Hang ({n} sáv)",
+      "perApp": "Minden további alkalmazássáv",
+      "note": "{w}×{h}, {fps} FPS, a jelenlegi kódolóbeállításokkal.",
+      "approxNote": "A minőség alapú módoknak nincs fix bitrátája, ez csak durva becslés. A gyors akciójelenetek nagyobbak lesznek."
+    },
+    "buffer": {
+      "title": "Puffer",
+      "hint": "Hol várakozik a felvétel, amíg el nem mented.",
+      "mode": "Puffer helye",
+      "memoryHint": "A leggyorsabb. Kb. {mb} RAM-ot használ.",
+      "diskHint": "Szinte nem használ RAM-ot. Rövid szakaszok forognak a gyorsítótár-mappában.",
+      "memory": "Memória",
+      "disk": "Lemez",
+      "cacheDir": "Gyorsítótár-mappa",
+      "cacheDirHint": "SSD ajánlott."
+    },
+    "output": {
+      "title": "Mentés",
+      "hint": "Hová kerülnek a klipek, és mi lesz a nevük.",
+      "clipsDir": "Klipek mappája",
+      "container": "Formátum",
+      "containerHint": "Az MP4 mindenhol lejátszható; az MKV túléli a mentés közbeni összeomlást.",
+      "template": "Fájlnév",
+      "templateHint": "{app} {date} {time} {res} {fps}"
+    }
+  },
+  "clips": {
+    "title": "Legutóbbi klipek",
+    "hint": "{n} klip itt: {dir}",
+    "empty": "Még nincs klip",
+    "emptyHint": "Nyomd meg: {key}, amíg fut a visszajátszás.",
+    "confirmDelete": "Kattints újra a törléshez"
+  },
+  "hotkeys": {
+    "title": "Gyorsbillentyűk",
+    "hint": "Globális billentyűk, játék közben is működnek.",
+    "press": "Nyomj meg egy billentyűt…",
+    "none": "Nincs beállítva",
+    "saveClip": "Klip mentése",
+    "saveClipHint": "Klipbe menti a visszajátszás pufferét.",
+    "toggleBuffer": "Visszajátszás be / ki",
+    "toggleBufferHint": "Be- vagy kikapcsolja a visszajátszást.",
+    "openWindow": "Ablak megjelenítése",
+    "openWindowHint": "Előtérbe hozza ezt az ablakot."
+  },
+  "general": {
+    "app": {
+      "title": "Alkalmazás",
+      "language": "Nyelv",
+      "autostart": "Indítás a Windows-zal",
+      "autostartHint": "Bejelentkezéskor a tálcára indul.",
+      "startMinimized": "Indítás kis méretben",
+      "startMinimizedHint": "Egyből a tálcára nyílik.",
+      "startBuffer": "Visszajátszás indítása induláskor",
+      "startBufferHint": "A pufferelés az alkalmazás megnyitásakor elindul."
+    },
+    "feedback": {
+      "title": "Visszajelzés mentéskor",
+      "hint": "Honnan tudod, hogy elmentődött a klip.",
+      "toast": "Képernyős értesítés",
+      "sound": "Hang",
+      "soundHint": "Csak te hallod: soha nem kerül bele a klipekbe.",
+      "volume": "Hangerő"
+    }
+  },
+  "tray": {
+    "open": "Drazox Recorder megnyitása",
+    "startBuffer": "Visszajátszás indítása",
+    "stopBuffer": "Visszajátszás leállítása",
+    "saveClip": "Klip mentése",
+    "quit": "Kilépés"
+  },
+  "overlay": {
+    "saving": "Klip mentése…",
+    "savingHint": "A visszajátszás lemezre írása.",
+    "saved": "Klip elmentve",
+    "failed": "Hiba történt"
+  }
+}

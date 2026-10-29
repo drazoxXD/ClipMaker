@@ -1,0 +1,10 @@
+node_modules
+dist
+src-tauri/target
+src-tauri/gen
+src-tauri/ffmpeg
+
+# Lock files are not tracked: npm and cargo resolve fresh versions on every build.
+package-lock.json
+bun.lock
+Cargo.lock

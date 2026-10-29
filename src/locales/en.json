@@ -1,0 +1,279 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "clips": "Clips",
+    "video": "Video",
+    "audio": "Audio",
+    "replay": "Replay & Storage",
+    "hotkeys": "Hotkeys",
+    "general": "General",
+    "groupRecording": "Recording",
+    "groupApp": "App"
+  },
+  "action": {
+    "saveClip": "Save clip",
+    "minimize": "Minimize",
+    "close": "Close to tray",
+    "startBuffer": "Start replay",
+    "stopBuffer": "Stop replay",
+    "showInFolder": "Show in folder",
+    "delete": "Delete",
+    "browse": "Browse",
+    "openFolder": "Open folder",
+    "refresh": "Refresh",
+    "clear": "Clear",
+    "test": "Test"
+  },
+  "state": {
+    "idle": "Idle",
+    "starting": "Starting",
+    "buffering": "Recording",
+    "saving": "Saving",
+    "error": "Error"
+  },
+  "overview": {
+    "liveTitle": "Replay buffer is live",
+    "idleTitle": "Replay buffer is off",
+    "liveHint": "Press {key} to save the last {len}.",
+    "idleHint": "Start the replay buffer to keep the last moments ready to save.",
+    "output": "Output",
+    "encoder": "Encoder",
+    "bufferSize": "Buffer",
+    "estimate": "Full clip ≈ {mb}",
+    "performance": "Capture",
+    "dropped": "{n} dropped frames",
+    "tracks": "Audio tracks",
+    "noTracks": "No audio tracks yet.",
+    "audioSettings": "Audio settings",
+    "lastClip": "Last clip",
+    "noClip": "No clip saved this session."
+  },
+  "video": {
+    "capture": {
+      "title": "Capture",
+      "hint": "Plain screen capture. Nothing is injected into games.",
+      "monitor": "Monitor",
+      "api": "Capture method",
+      "apiHint": "Game window records the fullscreen game in front, like Game DVR: smooth even when the game bypasses the desktop. Otherwise the whole monitor is recorded.",
+      "cursor": "Capture cursor",
+      "priority": "Priority",
+      "priorityRecording": "Recording first",
+      "priorityGame": "Game first",
+      "priorityHint": {
+        "game": "The game keeps full GPU priority. Best in-game FPS; under heavy load a few clip frames may repeat.",
+        "recording": "The recorder is boosted on the GPU and CPU. Smoothest clips, at some cost to in-game FPS."
+      },
+      "apiMonitor": "Monitor",
+      "apiAuto": "Game window (auto)"
+    },
+    "output": {
+      "title": "Output",
+      "hint": "Clips come out at {w}×{h} ({aspect}). The width follows your monitor, so ultrawide stays ultrawide: no black bars.",
+      "resolution": "Resolution",
+      "native": "Native",
+      "custom": "Custom",
+      "customSize": "Custom size",
+      "keepAspect": "Keep aspect",
+      "fps": "Frame rate"
+    },
+    "encoder": {
+      "title": "Encoder",
+      "hint": "Only encoders that work on this PC are listed.",
+      "noneFound": "No working encoder was found. Check that the FFmpeg DLLs are next to the app.",
+      "device": "Encode on",
+      "deviceHint": "GPU barely touches game performance; CPU gives the most control.",
+      "codec": "Codec",
+      "encoder": "Encoder"
+    },
+    "rate": {
+      "title": "Rate control",
+      "hint": "How the encoder spends bits.",
+      "mode": "Mode",
+      "modeHint": {
+        "cbr": "Constant bitrate: predictable size.",
+        "vbr": "Variable bitrate: average target with a peak cap.",
+        "cqp": "Constant QP: fixed quality, size varies.",
+        "crf": "Constant rate factor: constant visual quality, size varies."
+      },
+      "bitrate": "Bitrate",
+      "bitrateHint": "20–50 Mbps suits 1440p60 gameplay.",
+      "maxBitrate": "Max bitrate",
+      "quality": "Quality",
+      "qualityHint": "Lower is better quality and bigger files."
+    },
+    "advanced": {
+      "title": "Advanced",
+      "hint": "Encoder tuning. The defaults are fine for most people.",
+      "preset": "Preset",
+      "presetHint": "Faster presets use less power, slower ones compress better.",
+      "profile": "Profile",
+      "tune": "Tune",
+      "keyframe": "Keyframe interval",
+      "keyframeHint": "Clips start on a keyframe, so shorter means more exact clip starts.",
+      "bframes": "B-frames",
+      "bframesHint": "0 is safest for every player and editor.",
+      "threads": "Encoder threads",
+      "threadsHint": "0 = automatic.",
+      "colorRange": "Color range",
+      "limited": "Limited (TV)",
+      "full": "Full (PC)"
+    }
+  },
+  "audio": {
+    "tracks": {
+      "title": "Tracks",
+      "hint": "Every track is saved separately in the clip, ready for your editor.",
+      "system": "System mix",
+      "systemHint": "Everything you hear, except this app's own sounds.",
+      "separate": "Separate apps",
+      "separateHint": "Give each app that makes sound its own track.",
+      "defaultRule": "New apps",
+      "defaultRuleHint": "What happens with an app the first time it makes sound.",
+      "mixMode": "Mix track",
+      "mixModeHint": {
+        "apps": "Every app gets its own channel with its own volume, mixed into one stereo track with your mic.",
+        "loopback": "One capture of everything you hear. Per-app volume then only affects apps on their own track."
+      },
+      "mixApps": "Per-app mix",
+      "mixLoopback": "Everything"
+    },
+    "rule": {
+      "separate": "Own track",
+      "mix": "Mix only"
+    },
+    "apps": {
+      "title": "Apps making sound",
+      "hint": "One row per app (by exe name). Settings you change are saved for that exe and come back next time.",
+      "disabled": "Separate apps is off, so everything goes into the system mix only.",
+      "empty": "Nothing is playing",
+      "emptyHint": "Apps show up here as soon as they make a sound.",
+      "recording": "on its own track",
+      "remembered": "Remembered apps",
+      "quiet": "quiet",
+      "mute": "Mute",
+      "loopbackVolume": "\"Everything\" mix: these volumes only change apps that have their own track.",
+      "saved": "Saved"
+    },
+    "mic": {
+      "title": "Microphone",
+      "hint": "Record your voice along with the game.",
+      "device": "Device",
+      "default": "Default microphone",
+      "ownTrack": "Own track",
+      "ownTrackHint": "Off: the mic is mixed into the system track.",
+      "volume": "Volume",
+      "gate": "Noise gate",
+      "gateHint": "Mutes the mic below this level.",
+      "gateOff": "Off",
+      "meterOpen": "They can hear you",
+      "gateAt": "Gate at {db} dB",
+      "meterClosed": "Muted by noise gate",
+      "meterHint": "Stay quiet for a moment and watch the grey bars, then drag the yellow line just above them. When you talk, the bars should turn green.",
+      "meterNoMic": "Turn the microphone on to see its level",
+      "meterNoGate": "Gate off: you're always heard",
+      "strength": "Suppression strength",
+      "suppressionHint": "Removes keyboard, fan and background noise before the gate. RNNoise is an AI denoiser.",
+      "strengthHint": "100% removes the most noise; lower keeps more of your natural voice.",
+      "suppression": "Noise suppression",
+      "suppressionOff": "Off",
+      "listen": "Listen",
+      "meterInput": "Input",
+      "meterAfter": "After suppression",
+      "meterVoice": "Voice detected",
+      "meterRemoved": "{db} dB of noise removed right now. Faint bars in the graph below are your raw input."
+    },
+    "encoding": {
+      "title": "Audio encoding",
+      "codec": "Codec",
+      "bitrate": "Bitrate per track",
+      "bitrateHint": "160 kbps is plenty for game audio.",
+      "sampleRate": "Sample rate"
+    }
+  },
+  "replay": {
+    "length": {
+      "title": "Replay length",
+      "hint": "How far back a saved clip reaches."
+    },
+    "estimate": {
+      "total": "Clip size",
+      "video": "Video",
+      "audio": "Audio ({n} tracks)",
+      "perApp": "Each extra app track",
+      "note": "At {w}×{h}, {fps} FPS with the current encoder settings.",
+      "approxNote": "Quality-based modes have no fixed bitrate, so this is a rough guess. Fast action scenes come out bigger."
+    },
+    "buffer": {
+      "title": "Buffer",
+      "hint": "Where the recording waits until you save it.",
+      "mode": "Keep buffer in",
+      "memoryHint": "Fastest. Uses about {mb} of RAM.",
+      "diskHint": "Uses almost no RAM. Short segments rotate in the cache folder.",
+      "memory": "Memory",
+      "disk": "Disk",
+      "cacheDir": "Cache folder",
+      "cacheDirHint": "An SSD is best."
+    },
+    "output": {
+      "title": "Saving",
+      "hint": "Where clips go and what they are called.",
+      "clipsDir": "Clips folder",
+      "container": "Container",
+      "containerHint": "MP4 plays everywhere; MKV survives crashes mid-save.",
+      "template": "File name",
+      "templateHint": "{app} {date} {time} {res} {fps}"
+    }
+  },
+  "clips": {
+    "title": "Recent clips",
+    "hint": "{n} clips in {dir}",
+    "empty": "No clips yet",
+    "emptyHint": "Press {key} while the replay buffer is live.",
+    "confirmDelete": "Click again to delete"
+  },
+  "hotkeys": {
+    "title": "Hotkeys",
+    "hint": "Global shortcuts. They work inside games too.",
+    "press": "Press a key…",
+    "none": "Not set",
+    "saveClip": "Save clip",
+    "saveClipHint": "Saves the replay buffer to a clip.",
+    "toggleBuffer": "Start / stop replay",
+    "toggleBufferHint": "Turns the replay buffer on or off.",
+    "openWindow": "Show window",
+    "openWindowHint": "Brings this window to the front."
+  },
+  "general": {
+    "app": {
+      "title": "Application",
+      "language": "Language",
+      "autostart": "Start with Windows",
+      "autostartHint": "Launches into the tray when you log in.",
+      "startMinimized": "Start minimized",
+      "startMinimizedHint": "Open straight to the tray.",
+      "startBuffer": "Start replay on launch",
+      "startBufferHint": "Begin buffering as soon as the app opens."
+    },
+    "feedback": {
+      "title": "Save feedback",
+      "hint": "How you know a clip was saved.",
+      "toast": "On-screen notification",
+      "sound": "Sound",
+      "soundHint": "Only you hear it: it is never recorded into clips.",
+      "volume": "Sound volume"
+    }
+  },
+  "tray": {
+    "open": "Open Drazox Recorder",
+    "startBuffer": "Start replay",
+    "stopBuffer": "Stop replay",
+    "saveClip": "Save clip",
+    "quit": "Quit"
+  },
+  "overlay": {
+    "saving": "Saving clip…",
+    "savingHint": "Writing the replay buffer to disk.",
+    "saved": "Clip saved",
+    "failed": "Something went wrong"
+  }
+}
