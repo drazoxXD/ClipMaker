@@ -100,6 +100,8 @@ pub fn build_config<'a>(v: &'a VideoSettings, w: u32, h: u32, pix_fmt: AVPixelFo
 		}
 		Family::Nvenc => {
 			o.set("preset", &v.preset);
+			// Spatial adaptive quantization, NVENC's counterpart of AMF's vbaq.
+			o.set("spatial-aq", 1);
 			o.set("tune", &v.tune);
 			o.set("profile", &v.profile);
 			match v.rate_control.as_str() {

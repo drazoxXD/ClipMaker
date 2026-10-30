@@ -74,11 +74,14 @@ pub struct Recorder {
 	pipeline: Mutex<Option<Pipeline>>,
 	pub status: RwLock<Status>,
 	saving: AtomicBool,
+	/// An encoder whose zero-copy start failed (an NVIDIA GPU on a laptop whose screen is driven by the
+	/// integrated GPU): it runs with frames read back to the CPU from then on.
+	no_zero_copy: Mutex<Option<String>>,
 }
 
 impl Recorder {
 	pub fn new() -> Self {
-		Self { pipeline: Mutex::new(None), status: RwLock::new(Status { state: "idle".into(), ..Default::default() }), saving: AtomicBool::new(false) }
+		Self { pipeline: Mutex::new(None), status: RwLock::new(Status { state: "idle".into(), ..Default::default() }), saving: AtomicBool::new(false), no_zero_copy: Mutex::new(None) }
 	}
 
 	pub fn is_running(&self) -> bool {
@@ -110,9 +113,10 @@ impl Recorder {
 		if !encoders.iter().any(|e| e.id == vs.encoder) {
 			vs.encoder = crate::encode::probe::default_encoder(encoders).map(|e| e.id.clone()).ok_or_else(|| anyhow!("no working video encoder"))?;
 		}
+		crate::encode::fit_options(&mut vs);
 		// GPU encoders that accept D3D11 textures run zero-copy inside the capture thread (opened there,
 		// on the capture device); everything else gets NV12 read back to the CPU and its own thread.
-		let zero_copy = video::zero_copy(&vs);
+		let zero_copy = video::zero_copy(&vs) && self.no_zero_copy.lock().as_deref() != Some(vs.encoder.as_str());
 		let cpu_encoder = if zero_copy { None } else { Some(video::open(&vs, w, h).with_context(|| format!("opening {}", vs.encoder))?) };
 		let encoder_label = if zero_copy { format!("{} · zero-copy", vs.encoder) } else { vs.encoder.clone() };
 
@@ -143,6 +147,13 @@ impl Recorder {
 		}
 		match ready_rx.recv_timeout(Duration::from_secs(5)) {
 			Ok(Ok(())) => {}
+			Ok(Err(e)) if zero_copy => {
+				stop.store(true, Ordering::Relaxed);
+				log::warn!("{} zero-copy failed ({e:#}); retrying with CPU readback", vs.encoder);
+				*self.no_zero_copy.lock() = Some(vs.encoder.clone());
+				drop(slot);
+				return self.start(settings, encoders);
+			}
 			Ok(Err(e)) => {
 				stop.store(true, Ordering::Relaxed);
 				return Err(e.context("starting screen capture"));
