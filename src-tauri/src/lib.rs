@@ -421,6 +421,7 @@ pub fn run() {
 							s.video.codec = d.codec.clone();
 							s.video.device = d.device.clone();
 						}
+						encode::fit_options(&mut s.video);
 						let _ = s.save(&settings_path);
 					} else if encode::fit_options(&mut s.video) || !existed {
 						let _ = s.save(&settings_path);
@@ -440,6 +441,5 @@ pub fn run() {
 		})
 		.invoke_handler(tauri::generate_handler![get_settings, set_settings, list_monitors, list_encoders, list_audio_apps, monitor_start, monitor_stop, monitor_listen, list_mic_devices, get_status, start_buffer_cmd, stop_buffer_cmd, save_clip_cmd, list_clips, delete_clip, open_path, reveal_path])
 		.run(tauri::generate_context!())
-						encode::fit_options(&mut s.video);
 		.expect("error while running ClipMaker");
 }
