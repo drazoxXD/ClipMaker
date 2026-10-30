@@ -90,13 +90,15 @@ pub struct Denoiser {
 	state: Box<nnnoiseless::DenoiseState<'static>>,
 	strength: f32,
 	pending: Vec<f32>,
+	/// The previous input frame: the dry signal that lines up with RNNoise's output.
+	dry: [f32; nnnoiseless::DenoiseState::FRAME_SIZE],
 	ready: VecDeque<f32>,
 	voice: f32,
 }
 
 impl Denoiser {
 	pub fn new(strength: f32) -> Self {
-		Self { state: nnnoiseless::DenoiseState::new(), strength, pending: Vec::new(), ready: VecDeque::new(), voice: 0.0 }
+		Self { state: nnnoiseless::DenoiseState::new(), strength, pending: Vec::new(), dry: [0.0; nnnoiseless::DenoiseState::FRAME_SIZE], ready: VecDeque::new(), voice: 0.0 }
 	}
 
 	pub fn strength(&self) -> f32 {
@@ -116,10 +118,13 @@ impl Denoiser {
 		let mut out = [0f32; N];
 		while self.pending.len() >= N {
 			self.voice = self.state.process_frame(&mut out, &self.pending[..N]);
+			// RNNoise's output is one frame (10 ms) behind its input, so the dry side of the blend is
+			// the previous frame; blending with the current one put a 10 ms echo on the voice.
 			for i in 0..N {
-				let dry = self.pending[i];
+				let dry = self.dry[i];
 				self.ready.push_back((dry + (out[i] - dry) * self.strength) / 32767.0);
 			}
+			self.dry.copy_from_slice(&self.pending[..N]);
 			self.pending.drain(..N);
 		}
 		for frame in samples.chunks_mut(CHANNELS) {
