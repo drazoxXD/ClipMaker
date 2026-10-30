@@ -68,6 +68,12 @@ jobs:
           $sw = [System.Diagnostics.Stopwatch]::StartNew()
           npm install --no-audit --no-fund
           if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
+          # npm sometimes skips rollup's native binary (npm/cli#4828, worse with no lock file); add it by hand.
+          if (-not (Test-Path node_modules/@rollup/rollup-win32-x64-msvc)) {
+            $rollup = node -p "require('rollup/package.json').version"
+            npm install --no-save --no-audit --no-fund "@rollup/rollup-win32-x64-msvc@$rollup"
+            if ($LASTEXITCODE -ne 0) { throw "rollup native install failed" }
+          }
           Add-Content log/build.txt "Dependencies: installed in $(Fmt $sw.Elapsed.TotalSeconds)"
           $sw.Restart()
           npm run tauri build
