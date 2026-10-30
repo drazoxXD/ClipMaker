@@ -55,8 +55,6 @@ struct AppTrack {
 	exe: String,
 	/// Whether this capture also encodes a track of its own ("Own track" rule).
 	own_track: bool,
-	/// The buffer stream of its own track, reused by the next capture of the same exe.
-	stream: Option<u32>,
 }
 
 struct Pipeline {
@@ -310,52 +308,60 @@ impl Recorder {
 /// they make sound. Volumes are read live, so the sliders apply without a restart.
 fn watch_sessions(stop: Arc<AtomicBool>, settings: Arc<RwLock<Settings>>, buffer: Arc<Mutex<ReplayBuffer>>, tracks: Arc<Mutex<HashMap<u32, AppTrack>>>, next_id: Arc<AtomicU32>, mix: Option<MixInputs>) {
 	audio::com_init();
-	// Own-track streams per exe, one per process tree running at once. A restarted capture takes a free
-	// one back, so an app that keeps relaunching (VLC) never piles up tracks.
-	let mut own_streams: HashMap<String, Vec<u32>> = HashMap::new();
+	// One own track per exe. A process that starts while another of the same exe holds the track (VLC
+	// opening the next video before the last one closed) goes into the mix only, and takes the track over
+	// once the holder exits, so a relaunching app never piles up tracks.
+	let mut own_streams: HashMap<String, u32> = HashMap::new();
 	while !stop.load(Ordering::Relaxed) {
 		let s = settings.read().audio.clone();
 		let wants_track = |exe: &str| s.separate_apps && s.rule_for(exe) == "separate";
+		let stop_capture = |pid: &u32, t: &AppTrack| {
+			t.stop.store(true, Ordering::Relaxed);
+			if let Some(m) = &mix {
+				m.lock().retain(|(p, _)| p != pid);
+			}
+		};
 
 		// Stop captures whose process died or whose track rule changed (they restart with the new rule).
 		tracks.lock().retain(|pid, t| {
-			let keep = sessions::is_alive(*pid) && (mix.is_some() || wants_track(&t.exe)) && t.own_track == wants_track(&t.exe);
+			let keep = sessions::is_alive(*pid) && (mix.is_some() || wants_track(&t.exe)) && (!t.own_track || wants_track(&t.exe));
 			if !keep {
-				t.stop.store(true, Ordering::Relaxed);
-				if let Some(m) = &mix {
-					m.lock().retain(|(p, _)| p != pid);
-				}
+				stop_capture(pid, t);
+			}
+			keep
+		});
+		// A mix-only capture of an own-track exe restarts with the track once nobody holds it.
+		let holders: HashSet<String> = tracks.lock().values().filter(|t| t.own_track).map(|t| t.exe.to_lowercase()).collect();
+		tracks.lock().retain(|pid, t| {
+			let keep = t.own_track || !wants_track(&t.exe) || holders.contains(&t.exe.to_lowercase());
+			if !keep {
+				stop_capture(pid, t);
 			}
 			keep
 		});
 
 		let tracked: HashSet<u32> = tracks.lock().keys().copied().collect();
+		let mut holders = holders;
 		let apps = if mix.is_some() { sessions::list_all(&tracked) } else { sessions::list(&tracked) };
-		// One capture per process tree; an exe with several (VLC instances) shares one row, volume and rule.
+		// One capture per process tree; an exe with several (VLC instances) shares one row, volume, rule and track.
 		for (app, root) in apps.iter().flat_map(|a| a.roots.iter().map(move |r| (a, *r))).filter(|(_, r)| !tracked.contains(r)) {
-			let own = wants_track(&app.exe);
+			let own = wants_track(&app.exe) && !holders.contains(&app.exe.to_lowercase());
 			if mix.is_none() && !(own && app.peak > sessions::SOUND_THRESHOLD) {
 				continue;
 			}
 			let rate = s.effective_rate();
-			let mut stream = None;
 			let track = if own {
-				let in_use: HashSet<u32> = tracks.lock().values().filter_map(|t| t.stream).collect();
-				let ids = own_streams.entry(app.exe.to_lowercase()).or_default();
-				let (id, nth, new) = match ids.iter().position(|id| !in_use.contains(id)) {
-					Some(n) => (ids[n], n, false),
-					None => {
-						ids.push(next_id.fetch_add(1, Ordering::Relaxed));
-						(ids[ids.len() - 1], ids.len() - 1, true)
-					}
+				let (id, new) = match own_streams.get(&app.exe.to_lowercase()) {
+					Some(&id) => (id, false),
+					None => (next_id.fetch_add(1, Ordering::Relaxed), true),
 				};
 				match AudioTrack::new(&s.codec, rate, s.bitrate_kbps, clock::now_us(), id, buffer.clone()) {
 					Ok(t) => {
 						if new {
-							let title = if nth == 0 { app.name.clone() } else { format!("{} {}", app.name, nth + 1) };
-							buffer.lock().add_stream(id, StreamInfo { kind: StreamKind::Audio, title, skip_if_silent: true, params: Arc::new(t.params()) });
+							own_streams.insert(app.exe.to_lowercase(), id);
+							buffer.lock().add_stream(id, StreamInfo { kind: StreamKind::Audio, title: app.name.clone(), skip_if_silent: true, params: Arc::new(t.params()) });
 						}
-						stream = Some(id);
+						holders.insert(app.exe.to_lowercase());
 						Some(t)
 					}
 					Err(e) => {
@@ -381,7 +387,7 @@ fn watch_sessions(stop: Arc<AtomicBool>, settings: Arc<RwLock<Settings>>, buffer
 			let ts = tstop.clone();
 			match thread::Builder::new().name(format!("audio-{}", app.exe)).spawn(move || audio::run_source(cfg, track, ts)) {
 				Ok(handle) => {
-					tracks.lock().insert(root, AppTrack { stop: tstop, handle, exe: app.exe.clone(), own_track: own, stream });
+					tracks.lock().insert(root, AppTrack { stop: tstop, handle, exe: app.exe.clone(), own_track: own });
 				}
 				Err(e) => log::warn!("spawn app capture: {e}"),
 			}
