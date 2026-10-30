@@ -195,7 +195,9 @@ pub fn list_all(tracked: &HashSet<u32>) -> Vec<AudioApp> {
 				continue;
 			}
 			let Ok(pid) = ctl2.GetProcessId() else { continue };
-			if pid == 0 || mine.contains(&pid) {
+			// Windows keeps the sessions of exited processes around for a while; capturing those would
+			// restart a dead capture every pass.
+			if pid == 0 || mine.contains(&pid) || !table.contains_key(&pid) {
 				continue;
 			}
 			let peak = ctl.cast::<IAudioMeterInformation>().and_then(|m| m.GetPeakValue()).unwrap_or(0.0);
