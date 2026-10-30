@@ -25,6 +25,7 @@ chrono = "0.4"
 dirs = "6"
 base64 = "0.22"
 log = "0.4"
+ureq = "2"
 nnnoiseless = { version = "0.5", default-features = false }
 ffmpeg-sys-next = { version = "9", default-features = false, features = ["avcodec", "avformat", "swscale"] }
 

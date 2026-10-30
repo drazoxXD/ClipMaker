@@ -19,11 +19,13 @@ pub struct GeneralSettings {
 	pub toast_on_save: bool,
 	pub save_sound: bool,
 	pub save_sound_volume: u32,
+	/// Install a downloaded update on launch. Off: updates are still found, and installed from the banner.
+	pub auto_update: bool,
 }
 
 impl Default for GeneralSettings {
 	fn default() -> Self {
-		Self { language: "en".into(), autostart: false, start_minimized: false, start_buffer_on_launch: true, toast_on_save: true, save_sound: false, save_sound_volume: 60 }
+		Self { language: "en".into(), autostart: false, start_minimized: false, start_buffer_on_launch: true, toast_on_save: true, save_sound: false, save_sound_volume: 60, auto_update: true }
 	}
 }
 

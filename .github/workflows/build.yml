@@ -54,8 +54,11 @@ jobs:
         shell: pwsh
         run: ./scripts/fetch-ffmpeg.ps1
 
+      # The run number is the release's build-N tag; the app compares it with the latest release to update.
       - name: Build
         shell: pwsh
+        env:
+          CLIPMAKER_BUILD: ${{ github.run_number }}
         run: |
           New-Item -ItemType Directory -Force log | Out-Null
           function Fmt([double]$s) {

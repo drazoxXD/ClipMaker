@@ -1,5 +1,7 @@
 import { Button, Select, Slider, Switch } from "@mantine/core";
-import { IconVolume } from "@tabler/icons-react";
+import { IconDownload, IconRefresh, IconVolume } from "@tabler/icons-react";
+import { api } from "../../api";
+import { useUpdate } from "../../hooks/useUpdate";
 import { useSettings } from "../../store";
 import { LOCALES, useT } from "../../i18n";
 import { playSaveSound } from "../../utils/saveSound";
@@ -10,8 +12,11 @@ import SettingRow from "../shared/SettingRow";
 export default function GeneralPage() {
 	const t = useT();
 	const { settings, update } = useSettings();
+	const up = useUpdate();
 	if (!settings) return null;
 	const g = settings.general;
+	const dev = up?.state === "dev";
+	const busy = up?.state === "checking" || up?.state === "downloading" || up?.state === "installing";
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -50,6 +55,29 @@ export default function GeneralPage() {
 						<Button size="xs" variant="light" disabled={!g.saveSound} leftSection={<IconVolume size={14} />} onClick={() => playSaveSound(g.saveSoundVolume)}>
 							{t("action.test")}
 						</Button>
+					</div>
+				</SettingRow>
+			</Panel>
+
+			<Panel title={t("general.update.title")} hint={t("general.update.hint")}>
+				<SettingRow label={t("general.update.auto")} hint={t("general.update.autoHint")}>
+					<Switch checked={g.autoUpdate} disabled={dev} onChange={(e) => update((s) => void (s.general.autoUpdate = e.currentTarget.checked))} />
+				</SettingRow>
+				<SettingRow
+					label={dev || !up?.current ? t("general.update.dev") : `${t("general.update.version")}: ${t("general.update.build", { n: up.current })}`}
+					hint={up && !dev ? t(`general.update.state.${up.state}`, { n: up.latest ?? "", pct: `${Math.round(up.progress * 100)}%`, error: up.error ?? "" }) : undefined}
+					controlWidth="w-80"
+				>
+					<div className="flex w-full justify-end gap-2">
+						{up?.state === "ready" ? (
+							<Button size="xs" color="green" variant="light" leftSection={<IconDownload size={14} />} onClick={() => api.installUpdate()}>
+								{t("general.update.install")}
+							</Button>
+						) : (
+							<Button size="xs" variant="light" disabled={dev || busy} leftSection={<IconRefresh size={14} />} onClick={() => api.checkUpdate()}>
+								{t("general.update.check")}
+							</Button>
+						)}
 					</div>
 				</SettingRow>
 			</Panel>

@@ -261,6 +261,26 @@
       "sound": "Sound",
       "soundHint": "Only you hear it: it is never recorded into clips.",
       "volume": "Sound volume"
+    },
+    "update": {
+      "title": "Updates",
+      "hint": "New builds come from the GitHub releases.",
+      "auto": "Update automatically",
+      "autoHint": "Installs a downloaded update when the app starts. Off: you install it from the banner.",
+      "version": "Version",
+      "build": "Build {n}",
+      "dev": "Development build: updates are off",
+      "check": "Check now",
+      "install": "Install and restart",
+      "state": {
+        "idle": "Not checked yet",
+        "checking": "Checking…",
+        "upToDate": "Up to date",
+        "downloading": "Downloading build {n}… {pct}",
+        "ready": "Build {n} is ready to install",
+        "installing": "Installing…",
+        "error": "Update check failed: {error}"
+      }
     }
   },
   "tray": {
@@ -275,5 +295,9 @@
     "savingHint": "Writing the replay buffer to disk.",
     "saved": "Clip saved",
     "failed": "Something went wrong"
+  },
+  "header": {
+    "updateReady": "Restart to update",
+    "updateDownloading": "Downloading update {pct}"
   }
 }

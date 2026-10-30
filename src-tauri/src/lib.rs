@@ -10,6 +10,7 @@ mod i18n;
 mod monitors;
 mod recorder;
 mod settings;
+mod updater;
 
 use encode::probe::{self, EncoderInfo};
 use parking_lot::RwLock;
@@ -79,6 +80,7 @@ pub struct AppState {
 	recorder: Arc<Recorder>,
 	encoders: Arc<OnceLock<Vec<EncoderInfo>>>,
 	monitor: audio::monitor::Monitor,
+	updater: Arc<updater::Updater>,
 }
 
 impl AppState {
@@ -331,6 +333,23 @@ fn reveal_path(path: String) {
 	clips::reveal(&path);
 }
 
+#[tauri::command]
+fn update_status(state: tauri::State<AppState>) -> updater::UpdateStatus {
+	state.updater.status()
+}
+
+/// Checks now (and downloads a newer build); progress arrives as update://status events.
+#[tauri::command]
+fn update_check(app: AppHandle, state: tauri::State<AppState>) {
+	let up = state.updater.clone();
+	std::thread::spawn(move || up.check(&app));
+}
+
+#[tauri::command]
+fn update_install(app: AppHandle, state: tauri::State<AppState>) -> CmdResult<()> {
+	state.updater.install(&app).map_err(|e| format!("{e:#}"))
+}
+
 // ---------------------------------------------------------------- app
 
 pub fn run() {
@@ -358,7 +377,7 @@ pub fn run() {
 			let launched_minimized = std::env::args().any(|a| a == "--minimized");
 
 			let encoders: Arc<OnceLock<Vec<EncoderInfo>>> = Arc::new(OnceLock::new());
-			app.manage(AppState { settings: Arc::new(RwLock::new(settings.clone())), settings_path: settings_path.clone(), thumbs_dir, recorder: Arc::new(Recorder::new()), encoders: encoders.clone(), monitor: audio::monitor::Monitor::new() });
+			app.manage(AppState { settings: Arc::new(RwLock::new(settings.clone())), settings_path: settings_path.clone(), thumbs_dir, recorder: Arc::new(Recorder::new()), encoders: encoders.clone(), monitor: audio::monitor::Monitor::new(), updater: Arc::new(updater::Updater::new()) });
 
 			// Tray.
 			TrayIconBuilder::with_id(TRAY_ID)
@@ -428,6 +447,22 @@ pub fn run() {
 					}
 				}
 				let _ = encoders.set(list);
+				// Updates: installed right away on launch (unless turned off), found hourly after that.
+				{
+					let (app, up, settings) = (handle.clone(), state.updater.clone(), state.settings.clone());
+					std::thread::spawn(move || {
+						if up.check(&app) && settings.read().general.auto_update {
+							if let Err(e) = up.install(&app) {
+								log::warn!("installing update: {e:#}");
+							}
+							return;
+						}
+						loop {
+							std::thread::sleep(Duration::from_secs(3600));
+							up.check(&app);
+						}
+					});
+				}
 				if state.settings.read().general.start_buffer_on_launch {
 					start_buffer(&handle);
 				}
@@ -439,7 +474,7 @@ pub fn run() {
 			});
 			Ok(())
 		})
-		.invoke_handler(tauri::generate_handler![get_settings, set_settings, list_monitors, list_encoders, list_audio_apps, monitor_start, monitor_stop, monitor_listen, list_mic_devices, get_status, start_buffer_cmd, stop_buffer_cmd, save_clip_cmd, list_clips, delete_clip, open_path, reveal_path])
+		.invoke_handler(tauri::generate_handler![get_settings, set_settings, list_monitors, list_encoders, list_audio_apps, monitor_start, monitor_stop, monitor_listen, list_mic_devices, get_status, start_buffer_cmd, stop_buffer_cmd, save_clip_cmd, list_clips, delete_clip, open_path, reveal_path, update_status, update_check, update_install])
 		.run(tauri::generate_context!())
 		.expect("error while running ClipMaker");
 }

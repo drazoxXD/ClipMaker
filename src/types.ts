@@ -24,6 +24,17 @@ export interface GeneralSettings {
 	toastOnSave: boolean;
 	saveSound: boolean;
 	saveSoundVolume: number;
+	autoUpdate: boolean;
+}
+
+export type UpdateState = "dev" | "idle" | "checking" | "upToDate" | "downloading" | "ready" | "installing" | "error";
+
+export interface UpdateStatus {
+	current: number | null;
+	latest: number | null;
+	state: UpdateState;
+	progress: number;
+	error: string | null;
 }
 
 export interface ResolutionSettings {

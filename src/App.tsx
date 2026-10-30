@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { ActionIcon, Button } from "@mantine/core";
-import { IconDeviceFloppy, IconKeyboard, IconLayoutDashboard, IconMinus, IconMovie, IconSettings, IconStack2, IconVideo, IconVolume, IconX } from "@tabler/icons-react";
+import { IconDeviceFloppy, IconDownload, IconKeyboard, IconLayoutDashboard, IconMinus, IconMovie, IconSettings, IconStack2, IconVideo, IconVolume, IconX } from "@tabler/icons-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useSettings } from "./store";
 import { useT } from "./i18n";
 import { api } from "./api";
+import { useUpdate } from "./hooks/useUpdate";
 import Brand from "./components/shared/Brand";
 import ListRow from "./components/shared/ListRow";
 import SectionLabel from "./components/shared/SectionLabel";
@@ -37,6 +38,8 @@ export default function App() {
 	const { settings, status } = useSettings();
 	const [page, setPage] = useState<Page>("overview");
 	const win = getCurrentWindow();
+
+	const update = useUpdate();
 
 	if (!settings) {
 		return (
@@ -97,6 +100,14 @@ export default function App() {
 					</div>
 
 					<div className="flex items-center gap-2">
+						{update?.state === "downloading" && (
+							<div className="text-xs font-semibold text-(--mantine-color-dark-2)">{t("header.updateDownloading", { pct: `${Math.round(update.progress * 100)}%` })}</div>
+						)}
+						{update?.state === "ready" && (
+							<Button size="xs" color="green" variant="light" leftSection={<IconDownload size={14} />} onClick={() => api.installUpdate()}>
+								{t("header.updateReady")}
+							</Button>
+						)}
 						<ActionIcon variant="light" color="gray" radius="xl" onClick={() => win.minimize()} aria-label={t("action.minimize")}>
 							<IconMinus size={16} />
 						</ActionIcon>

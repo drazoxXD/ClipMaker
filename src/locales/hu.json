@@ -261,6 +261,26 @@
       "sound": "Hang",
       "soundHint": "Csak te hallod: soha nem kerül bele a klipekbe.",
       "volume": "Hangerő"
+    },
+    "update": {
+      "title": "Frissítések",
+      "hint": "Az új buildek a GitHub kiadásokból jönnek.",
+      "auto": "Automatikus frissítés",
+      "autoHint": "Indításkor telepíti a letöltött frissítést. Kikapcsolva a sávból telepítheted.",
+      "version": "Verzió",
+      "build": "Build {n}",
+      "dev": "Fejlesztői build: a frissítés ki van kapcsolva",
+      "check": "Keresés most",
+      "install": "Telepítés és újraindítás",
+      "state": {
+        "idle": "Még nem ellenőrizve",
+        "checking": "Keresés…",
+        "upToDate": "Naprakész",
+        "downloading": "Build {n} letöltése… {pct}",
+        "ready": "Build {n} telepítésre kész",
+        "installing": "Telepítés…",
+        "error": "A frissítés keresése sikertelen: {error}"
+      }
     }
   },
   "tray": {
@@ -275,5 +295,9 @@
     "savingHint": "A visszajátszás lemezre írása.",
     "saved": "Klip elmentve",
     "failed": "Hiba történt"
+  },
+  "header": {
+    "updateReady": "Újraindítás a frissítéshez",
+    "updateDownloading": "Frissítés letöltése {pct}"
   }
 }

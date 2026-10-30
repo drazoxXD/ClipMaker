@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { AudioApp, AudioDevice, ClipInfo, EncoderInfo, MonitorInfo, RecorderStatus, Settings } from "./types";
+import type { AudioApp, AudioDevice, ClipInfo, EncoderInfo, MonitorInfo, RecorderStatus, Settings, UpdateStatus } from "./types";
 
 export const api = {
 	getSettings: () => invoke<Settings>("get_settings"),
@@ -16,6 +16,9 @@ export const api = {
 	deleteClip: (path: string) => invoke<void>("delete_clip", { path }),
 	openPath: (path: string) => invoke<void>("open_path", { path }),
 	revealPath: (path: string) => invoke<void>("reveal_path", { path }),
+	updateStatus: () => invoke<UpdateStatus>("update_status"),
+	checkUpdate: () => invoke<void>("update_check"),
+	installUpdate: () => invoke<void>("update_install"),
 };
 
 export const EVENTS = {
@@ -23,4 +26,5 @@ export const EVENTS = {
 	clipSaving: "recorder://clip-saving",
 	clipSaved: "recorder://clip-saved",
 	error: "recorder://error",
+	update: "update://status",
 } as const;
