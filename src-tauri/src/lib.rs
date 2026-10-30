@@ -34,7 +34,7 @@ fn create_overlay(app: &tauri::App) -> tauri::Result<()> {
 	const W: f64 = 380.0;
 	const H: f64 = 420.0;
 	let win = WebviewWindowBuilder::new(app, "overlay", WebviewUrl::App("overlay.html".into()))
-		.title("Drazox Recorder Overlay")
+		.title("ClipMaker Overlay")
 		.decorations(false)
 		.transparent(true)
 		.always_on_top(true)
@@ -192,7 +192,7 @@ fn rebuild_tray(app: &AppHandle) {
 	};
 	if let (Some(tray), Ok(menu)) = (app.tray_by_id(TRAY_ID), build()) {
 		let _ = tray.set_menu(Some(menu));
-		let _ = tray.set_tooltip(Some(if running { "Drazox Recorder · REC" } else { "Drazox Recorder" }));
+		let _ = tray.set_tooltip(Some(if running { "ClipMaker · REC" } else { "ClipMaker" }));
 	}
 }
 
@@ -345,7 +345,16 @@ pub fn run() {
 			let config_dir = app.path().app_config_dir()?;
 			let settings_path = config_dir.join("settings.json");
 			let thumbs_dir = app.path().app_cache_dir()?.join("thumbs");
-			let (settings, existed) = Settings::load(&settings_path);
+			// Settings from before the rename to ClipMaker carry over once.
+			let old_settings = config_dir.with_file_name(settings::OLD_IDENTIFIER).join("settings.json");
+			let carried = !settings_path.exists() && old_settings.exists() && std::fs::create_dir_all(&config_dir).and_then(|_| std::fs::copy(&old_settings, &settings_path)).is_ok();
+			let (mut settings, mut existed) = Settings::load(&settings_path);
+			if carried && settings.general.autostart {
+				let _ = app.autolaunch().enable(); // the old entry starts the old exe
+			}
+			if settings.migrate_rename() {
+				existed = false; // saved below, once the encoders are known
+			}
 			let launched_minimized = std::env::args().any(|a| a == "--minimized");
 
 			let encoders: Arc<OnceLock<Vec<EncoderInfo>>> = Arc::new(OnceLock::new());
@@ -431,5 +440,5 @@ pub fn run() {
 		})
 		.invoke_handler(tauri::generate_handler![get_settings, set_settings, list_monitors, list_encoders, list_audio_apps, monitor_start, monitor_stop, monitor_listen, list_mic_devices, get_status, start_buffer_cmd, stop_buffer_cmd, save_clip_cmd, list_clips, delete_clip, open_path, reveal_path])
 		.run(tauri::generate_context!())
-		.expect("error while running Drazox Recorder");
+		.expect("error while running ClipMaker");
 }

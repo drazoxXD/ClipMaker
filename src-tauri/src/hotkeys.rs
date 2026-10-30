@@ -227,7 +227,7 @@ pub fn start(on_action: impl Fn(Action) + Send + Sync + 'static) {
 	}
 	let _ = std::thread::Builder::new().name("hotkeys".into()).spawn(|| unsafe {
 		let instance = GetModuleHandleW(None).unwrap_or_default();
-		let class = w!("DrazoxHotkeys");
+		let class = w!("ClipMakerHotkeys");
 		RegisterClassW(&WNDCLASSW { lpfnWndProc: Some(wndproc), hInstance: instance.into(), lpszClassName: class, ..Default::default() });
 		let Ok(hwnd) = CreateWindowExW(WINDOW_EX_STYLE(0), class, w!(""), WINDOW_STYLE(0), 0, 0, 0, 0, Some(HWND_MESSAGE), None, Some(instance.into()), None) else {
 			log::error!("hotkey window could not be created");

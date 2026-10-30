@@ -1,11 +1,11 @@
 [package]
-name = "drazox-recorder"
+name = "clipmaker"
 version = "0.1.0"
 description = "Screen replay recorder"
 edition = "2021"
 
 [lib]
-name = "drazox_recorder_lib"
+name = "clipmaker_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

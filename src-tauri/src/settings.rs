@@ -3,6 +3,12 @@
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, fs, path::PathBuf};
 
+/// Folder name for the default clips and cache folders.
+pub const APP_DIR: &str = "ClipMaker";
+/// The app's name and config identifier before it was renamed to ClipMaker.
+const OLD_APP_DIR: &str = "Drazox Recorder";
+pub const OLD_IDENTIFIER: &str = "com.drazox.recorder";
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase", default)]
 pub struct GeneralSettings {
@@ -194,7 +200,7 @@ pub struct ReplaySettings {
 
 impl Default for ReplaySettings {
 	fn default() -> Self {
-		let cache = dirs::cache_dir().unwrap_or_else(std::env::temp_dir).join("Drazox Recorder").join("buffer");
+		let cache = dirs::cache_dir().unwrap_or_else(std::env::temp_dir).join(APP_DIR).join("buffer");
 		Self { length_sec: 60, buffer_mode: "memory".into(), cache_dir: cache.to_string_lossy().into() }
 	}
 }
@@ -209,7 +215,7 @@ pub struct OutputSettings {
 
 impl Default for OutputSettings {
 	fn default() -> Self {
-		let dir = dirs::video_dir().or_else(dirs::home_dir).unwrap_or_default().join("Drazox Recorder");
+		let dir = dirs::video_dir().or_else(dirs::home_dir).unwrap_or_default().join(APP_DIR);
 		Self { clips_dir: dir.to_string_lossy().into(), container: "mp4".into(), filename_template: "{app}_{date}_{time}".into() }
 	}
 }
@@ -245,6 +251,23 @@ impl Settings {
 			Some(s) => (s, true),
 			None => (Self::default(), false),
 		}
+	}
+
+	/// Points folders still at the pre-rename defaults (`Videos\Drazox Recorder`, ...) at the new ones,
+	/// moving the old clips folder over when the new one doesn't exist yet. Returns whether anything changed.
+	pub fn migrate_rename(&mut self) -> bool {
+		let mut changed = false;
+		for (dir, new) in [(&mut self.output.clips_dir, OutputSettings::default().clips_dir), (&mut self.replay.cache_dir, ReplaySettings::default().cache_dir)] {
+			let old = new.replacen(APP_DIR, OLD_APP_DIR, 1);
+			if *dir == old {
+				if PathBuf::from(&old).exists() && !PathBuf::from(&new).exists() {
+					let _ = fs::rename(&old, &new);
+				}
+				*dir = new;
+				changed = true;
+			}
+		}
+		changed
 	}
 
 	pub fn save(&self, path: &PathBuf) -> anyhow::Result<()> {

@@ -264,7 +264,7 @@
     }
   },
   "tray": {
-    "open": "Drazox Recorder megnyitása",
+    "open": "ClipMaker megnyitása",
     "startBuffer": "Visszajátszás indítása",
     "stopBuffer": "Visszajátszás leállítása",
     "saveClip": "Klip mentése",

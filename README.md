@@ -43,7 +43,7 @@ Ultrawide is first class: a 3440Ã—1440 monitor at the 1080p preset records 2580Ã
 
 1. Download [`ClipMaker_Setup.exe`](https://github.com/drazoxXD/ClipMaker/releases/latest/download/ClipMaker_Setup.exe) from the latest release and run it.
 2. ClipMaker opens and starts the replay buffer. The Overview page shows what is being captured.
-3. Press **F8** (change it on the Hotkeys page) to save the last minute. Clips go to `Videos\Drazox Recorder`.
+3. Press **F8** (change it on the Hotkeys page) to save the last minute. Clips go to `Videos\ClipMaker`.
 
 Closing the window keeps ClipMaker running in the tray; quit from the tray menu.
 

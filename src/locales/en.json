@@ -264,7 +264,7 @@
     }
   },
   "tray": {
-    "open": "Open Drazox Recorder",
+    "open": "Open ClipMaker",
     "startBuffer": "Start replay",
     "stopBuffer": "Stop replay",
     "saveClip": "Save clip",
