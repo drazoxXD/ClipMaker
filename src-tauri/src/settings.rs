@@ -254,14 +254,15 @@ impl Settings {
 	}
 
 	/// Points folders still at the pre-rename defaults (`Videos\Drazox Recorder`, ...) at the new ones,
-	/// moving the old clips folder over when the new one doesn't exist yet. Returns whether anything changed.
+	/// moving each old folder over when it can. Returns whether anything changed.
 	pub fn migrate_rename(&mut self) -> bool {
 		let mut changed = false;
 		for (dir, new) in [(&mut self.output.clips_dir, OutputSettings::default().clips_dir), (&mut self.replay.cache_dir, ReplaySettings::default().cache_dir)] {
 			let old = new.replacen(APP_DIR, OLD_APP_DIR, 1);
 			if *dir == old {
-				if PathBuf::from(&old).exists() && !PathBuf::from(&new).exists() {
-					let _ = fs::rename(&old, &new);
+				// A folder that can't move (a clip open in a player) stays where it is, under its old name.
+				if PathBuf::from(&old).exists() && (PathBuf::from(&new).exists() || fs::rename(&old, &new).is_err()) {
+					continue;
 				}
 				*dir = new;
 				changed = true;
